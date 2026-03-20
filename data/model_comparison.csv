@@ -1,0 +1,10 @@
+model,MAE,RMSE,MAPE
+Naive (24h ago),2382.6,3438.4,8.35
+Seasonal Naive (1 week),2577.54,3796.63,9.06
+7-day Rolling Mean,3956.43,4553.49,14.49
+XGBoost (default),491.83,728.58,1.76
+XGBoost (tuned),457.92,696.17,1.64
+LightGBM,488.36,732.81,1.75
+Random Forest,523.44,797.39,1.87
+TSO Forecast,248.83,339.9,0.87
+XGBoost (gen forecasts),414.83,634.62,1.48
