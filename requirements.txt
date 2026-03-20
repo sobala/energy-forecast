@@ -4,6 +4,7 @@ matplotlib
 seaborn
 scikit-learn
 xgboost
+lightgbm
 jupyter
-streamlit
+streamlit>=1.32.0
 plotly
