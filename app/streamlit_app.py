@@ -161,7 +161,6 @@ def main():
 
     # --- Error breakdown tabs ---
     st.subheader("Error Breakdown")
-    st.subheader("Error Breakdown")
     st.markdown("""
                 Model errors are not uniform. Morning ramp-up hours and evenings are hardest to predict 
                 due to variable demand timing. Mid-week days are easiest, while weekends and 
