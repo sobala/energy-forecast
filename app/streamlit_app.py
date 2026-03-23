@@ -70,6 +70,11 @@ def main():
                 TSO's own forecast. Best model achieves 1.48% MAPE, an 82% improvement over the naive baseline.
     """)
 
+    st.sidebar.markdown("""
+                        **Note:** Oct 2018 - Dec 2018 is the held-out test period. Predictions on earlier dates are on training 
+                        data and will appear more accurate.
+    """)
+
     try:
         df = load_data()
         model, feature_cols = load_model()
@@ -158,10 +163,10 @@ def main():
     st.subheader("Error Breakdown")
     st.subheader("Error Breakdown")
     st.markdown("""
-                Model errors are not uniform. Morning ramp-up hours (5-6am) and evenings are hardest to predict 
-                due to variable demand timing. Mid-week days (Wed-Thu) are easiest, while weekends and 
+                Model errors are not uniform. Morning ramp-up hours and evenings are hardest to predict 
+                due to variable demand timing. Mid-week days are easiest, while weekends and 
                 Mondays show higher errors from less predictable activity patterns. The residual distribution 
-                is centered at zero with no systematic bias, though a few large errors (up to 6,000 MW) occur 
+                is centered at zero with no systematic bias, though a few large errors occur 
                 on holidays where the model expects normal demand.
     """)
     tab1, tab2, tab3 = st.tabs(["By Hour", "By Day of Week", "Residuals"])
