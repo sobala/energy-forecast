@@ -70,11 +70,6 @@ def main():
                 TSO's own forecast. Best model achieves 1.48% MAPE, an 82% improvement over the naive baseline.
     """)
 
-    st.sidebar.markdown("""
-                        **Note:** Oct 2018 - Dec 2018 is the held-out test period. Predictions on earlier dates are on training 
-                        data and will appear more accurate.
-    """)
-
     try:
         df = load_data()
         model, feature_cols = load_model()
@@ -115,6 +110,11 @@ def main():
     if len(view) == 0:
         st.warning("No data in selected range.")
         st.stop()
+
+    st.sidebar.markdown("""
+                        **Note:** Oct 2018 - Dec 2018 is the held-out test period. Predictions on earlier dates are on training 
+                        data and will appear more accurate.
+    """)
 
     # --- Metrics ---
     col1, col2, col3, col4 = st.columns(4)
