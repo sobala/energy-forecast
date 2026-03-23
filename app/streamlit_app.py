@@ -53,10 +53,22 @@ def load_model():
 # ---------------------------------------------------------------------------
 def main():
     st.title("Energy Consumption Forecast")
-    st.markdown(
-        "24-hour-ahead forecasting for Spain's electricity grid using XGBoost. "
-        "Select a date range to see how the model performs against actual consumption."
-    )
+    st.markdown("""
+                24-hour-ahead forecasting for Spain's electricity grid. Select a date range to see how the 
+                model performs against actual consumption.
+
+                **Objective:** Predict hourly energy consumption 24 hours ahead using only information available 
+                at prediction time: historical demand patterns, time features, and day-ahead generation forecasts.
+
+                **Data:** [Hourly Energy Demand, Generation, Prices and Weather]
+                (https://www.kaggle.com/datasets/nicholasjhana/energy-consumption-generation-prices-and-weather). 
+                4 years of hourly data from Spain (2015-2018) covering consumption, generation by source, electricity 
+                prices, and weather across 5 cities.
+
+                **Approach:** Engineered lag features (24h, 48h, 168h), rolling statistics, 
+                and time features. Compared XGBoost, LightGBM, and Random Forest against naive baselines and the 
+                TSO's own forecast. Best model achieves 1.48% MAPE, an 82% improvement over the naive baseline.
+    """)
 
     try:
         df = load_data()
@@ -108,6 +120,13 @@ def main():
 
     # --- Forecast chart ---
     st.subheader("Actual vs Predicted")
+    st.markdown("""
+                Predictions from XGBoost trained with time features, lag/rolling statistics, and the TSO's day-ahead solar and 
+                wind generation forecasts. This feature set outperformed raw weather variables in ablation testing 
+                (1.48% vs 1.65% MAPE), likely because the generation forecasts are pre-processed weather signals that 
+                are more directly relevant to grid conditions. The model uses only information genuinely available 24 
+                hours before prediction time.
+    """)
 
     fig = go.Figure()
     fig.add_trace(
@@ -137,6 +156,14 @@ def main():
 
     # --- Error breakdown tabs ---
     st.subheader("Error Breakdown")
+    st.subheader("Error Breakdown")
+    st.markdown("""
+                Model errors are not uniform. Morning ramp-up hours (5-6am) and evenings are hardest to predict 
+                due to variable demand timing. Mid-week days (Wed-Thu) are easiest, while weekends and 
+                Mondays show higher errors from less predictable activity patterns. The residual distribution 
+                is centered at zero with no systematic bias, though a few large errors (up to 6,000 MW) occur 
+                on holidays where the model expects normal demand.
+    """)
     tab1, tab2, tab3 = st.tabs(["By Hour", "By Day of Week", "Residuals"])
 
     with tab1:
@@ -179,6 +206,12 @@ def main():
 
     # --- Feature importance ---
     st.subheader("Top 15 Feature Importances")
+    st.markdown("""
+                Hour of day dominates, followed by rolling mean statistics that capture recent 
+                demand trends. The solar generation forecast ranks #7, confirming it adds signal 
+                beyond what time and lag features provide. Longer-term lags (168h, 48h) rank lower 
+                because the rolling means already summarise the same historical patterns more smoothly.
+    """)
 
     importance = (
         pd.DataFrame(
@@ -204,6 +237,30 @@ def main():
 
     # --- Model Comparison ---
     st.subheader("Model Comparison")
+    st.markdown("""
+                **Baselines** set the floor. Naive uses the consumption value from 24 hours ago. 
+                Seasonal naive uses the value from exactly one week ago (same hour, same day of week). 
+                7-day rolling mean averages the past week. These are simple heuristics that any ML model should beat.
+
+                **Random Forest** is a bagging ensemble that builds many independent decision trees and 
+                averages their predictions. It improves on baselines but can't learn sequential error patterns 
+                the way boosting methods can.
+
+                **XGBoost (default and tuned)** and **LightGBM** are gradient boosting models that build trees 
+                sequentially, with each tree correcting the errors of the previous one. XGBoost tuned slightly 
+                outperforms default after grid search over depth, learning rate, and number of trees. LightGBM 
+                produces similar results, confirming that performance is driven by feature engineering rather than 
+                model choice.
+
+                **XGBoost (gen forecasts)** is the same tuned XGBoost but trained with day-ahead solar and wind 
+                generation forecasts instead of raw weather features. This produced the best ML result (1.48% MAPE), 
+                as the generation forecasts act as pre-processed weather signals more directly relevant to grid 
+                conditions.
+
+                **TSO Forecast** is the benchmark from Red Electrica, Spain's grid operator, using proprietary 
+                models and real-time data. It represents the practical ceiling for this problem given publicly 
+                available data.
+    """)
 
     try:
         comparison = pd.read_csv(
