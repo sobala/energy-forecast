@@ -46,10 +46,10 @@ def add_rolling_features(df, target_col, windows):
     df = df.copy()
     for window in windows:
         df[f"{target_col}_rolling_mean_{window}"] = (
-            df[target_col].shift(1).rolling(window=window).mean()
+            df[target_col].shift(24).rolling(window=window).mean()
         )
         df[f"{target_col}_rolling_std_{window}"] = (
-            df[target_col].shift(1).rolling(window=window).std()
+            df[target_col].shift(24).rolling(window=window).std()
         )
     return df
 
